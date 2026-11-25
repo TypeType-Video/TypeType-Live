@@ -21,8 +21,8 @@ func ValidTag(tag string) bool {
 	return true
 }
 
-func (c *Client) TagStreams(ctx context.Context, tag string, first int, after string) (Page[Stream], error) {
-	vars := pageVars(first, after)
+func (c *Client) TagStreams(ctx context.Context, tag string, languages []string, first int, after string) (Page[Stream], error) {
+	vars := languageVars(pageVars(first, after), languages)
 	vars["tags"] = []string{tag}
 	var data struct {
 		Streams connection[gqlStream] `json:"streams"`

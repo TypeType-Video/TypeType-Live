@@ -38,7 +38,7 @@ func TestTagStreamsFiltersByTag(t *testing.T) {
 			"freeformTags":[{"name":"Speedrun"}],"broadcaster":{"id":"2","login":"a","displayName":"A","broadcastSettings":{"title":"Run"}}}}],
 			"pageInfo":{"hasNextPage":false}}}}`)
 	})
-	page, err := c.TagStreams(context.Background(), "Speedrun", 24, "")
+	page, err := c.TagStreams(context.Background(), "Speedrun", nil, 24, "")
 	if err != nil {
 		t.Fatal(err)
 	}

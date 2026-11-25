@@ -25,12 +25,12 @@ func main() {
 		}
 		fmt.Printf("ok   %-16s %s\n", name, detail)
 	}
-	streams, err := c.TopStreams(ctx, 3, "")
+	streams, err := c.TopStreams(ctx, nil, 3, "")
 	check("TopStreams", err, fmt.Sprintf("%d items, more=%v", len(streams.Items), streams.HasMore))
 	games, err := c.TopGames(ctx, 3, "")
 	check("TopGames", err, fmt.Sprintf("%d items", len(games.Items)))
 	if len(games.Items) > 0 {
-		g, gs, err := c.GameStreams(ctx, games.Items[0].Slug, 2, "")
+		g, gs, err := c.GameStreams(ctx, games.Items[0].Slug, nil, 2, "")
 		name := ""
 		if g != nil {
 			name = g.Name

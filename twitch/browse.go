@@ -19,11 +19,11 @@ func (c *Client) raw(ctx context.Context, userToken, query string, vars map[stri
 	return c.gql(ctx, userToken, nil, gqlRequest{Query: query, Variables: vars}, out)
 }
 
-func (c *Client) TopStreams(ctx context.Context, first int, after string) (Page[Stream], error) {
+func (c *Client) TopStreams(ctx context.Context, languages []string, first int, after string) (Page[Stream], error) {
 	var data struct {
 		Streams connection[gqlStream] `json:"streams"`
 	}
-	if err := c.raw(ctx, "", queryTopStreams, pageVars(first, after), &data); err != nil {
+	if err := c.raw(ctx, "", queryTopStreams, languageVars(pageVars(first, after), languages), &data); err != nil {
 		return Page[Stream]{}, err
 	}
 	return toPage(data.Streams, func(s gqlStream) Stream { return s.model(nil) }), nil
@@ -39,8 +39,8 @@ func (c *Client) TopGames(ctx context.Context, first int, after string) (Page[Ga
 	return toPage(data.Games, func(g gqlGame) Game { return *g.model() }), nil
 }
 
-func (c *Client) GameStreams(ctx context.Context, slug string, first int, after string) (*Game, Page[Stream], error) {
-	vars := pageVars(first, after)
+func (c *Client) GameStreams(ctx context.Context, slug string, languages []string, first int, after string) (*Game, Page[Stream], error) {
+	vars := languageVars(pageVars(first, after), languages)
 	vars["slug"] = slug
 	var data struct {
 		Game *struct {

@@ -25,9 +25,21 @@ func loginParam(w http.ResponseWriter, r *http.Request) (string, bool) {
 	return login, true
 }
 
+func languageParam(w http.ResponseWriter, r *http.Request) ([]string, bool) {
+	languages, ok := twitch.ParseLanguages(r.URL.Query().Get("language"))
+	if !ok {
+		writeJSON(w, http.StatusBadRequest, errorBody{Error: "invalid_language"})
+	}
+	return languages, ok
+}
+
 func (s *Server) topStreams(w http.ResponseWriter, r *http.Request) {
+	languages, ok := languageParam(w, r)
+	if !ok {
+		return
+	}
 	first, after := pageParams(r)
-	page, err := s.twitch.TopStreams(r.Context(), first, after)
+	page, err := s.twitch.TopStreams(r.Context(), languages, first, after)
 	respond(w, r, page, err)
 }
 
@@ -43,8 +55,12 @@ type gameStreamsBody struct {
 }
 
 func (s *Server) gameStreams(w http.ResponseWriter, r *http.Request) {
+	languages, ok := languageParam(w, r)
+	if !ok {
+		return
+	}
 	first, after := pageParams(r)
-	game, page, err := s.twitch.GameStreams(r.Context(), r.PathValue("slug"), first, after)
+	game, page, err := s.twitch.GameStreams(r.Context(), r.PathValue("slug"), languages, first, after)
 	respond(w, r, gameStreamsBody{Game: game, Streams: page}, err)
 }
 
@@ -54,8 +70,12 @@ func (s *Server) tagStreams(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, errorBody{Error: "invalid_tag"})
 		return
 	}
+	languages, ok := languageParam(w, r)
+	if !ok {
+		return
+	}
 	first, after := pageParams(r)
-	page, err := s.twitch.TagStreams(r.Context(), tag, first, after)
+	page, err := s.twitch.TagStreams(r.Context(), tag, languages, first, after)
 	respond(w, r, page, err)
 }
 

@@ -61,7 +61,7 @@ func TestGQLErrorsAreClassified(t *testing.T) {
 		}
 		io.WriteString(w, `{"errors":[{"message":"failed integrity check"}],"data":null}`)
 	})
-	if _, err := c.TopStreams(context.Background(), 5, ""); !errors.Is(err, ErrIntegrity) {
+	if _, err := c.TopStreams(context.Background(), nil, 5, ""); !errors.Is(err, ErrIntegrity) {
 		t.Fatalf("err = %v", err)
 	}
 	if _, err := c.CurrentUser(context.Background(), "bad"); !errors.Is(err, ErrBadToken) {
@@ -75,7 +75,7 @@ func TestTopStreamsMapsEdges(t *testing.T) {
 			"game":{"id":"9","displayName":"Chess","slug":"chess"},"broadcaster":{"id":"2","login":"a","displayName":"A","broadcastSettings":{"title":"Title"}}}}],
 			"pageInfo":{"hasNextPage":true}}}}`)
 	})
-	page, err := c.TopStreams(context.Background(), 5, "")
+	page, err := c.TopStreams(context.Background(), nil, 5, "")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -36,6 +36,8 @@ type Stream struct {
 	Preview   string    `json:"previewUrl"`
 	StartedAt time.Time `json:"startedAt"`
 	Tags      []string  `json:"tags,omitempty"`
+	// Language is the broadcaster language Twitch lists the stream under, such as "DE".
+	Language string `json:"language,omitempty"`
 	// Archive is the past broadcast Twitch records while the channel is live, when it keeps one.
 	Archive *StreamArchive `json:"archive,omitempty"`
 }
@@ -136,7 +138,8 @@ type gqlStream struct {
 	Broadcaster *struct {
 		gqlUser
 		Settings struct {
-			Title string `json:"title"`
+			Title    string `json:"title"`
+			Language string `json:"language"`
 		} `json:"broadcastSettings"`
 	} `json:"broadcaster"`
 	Archive *struct {
@@ -156,6 +159,7 @@ func (s gqlStream) model(owner *gqlUser) Stream {
 		if out.Title == "" {
 			out.Title = s.Broadcaster.Settings.Title
 		}
+		out.Language = s.Broadcaster.Settings.Language
 	} else if owner != nil {
 		out.User = owner.model()
 	}

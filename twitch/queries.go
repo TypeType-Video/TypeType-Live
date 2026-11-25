@@ -9,7 +9,7 @@ const streamFields = `id title viewersCount createdAt previewImageURL(width: 640
 	freeformTags { name }`
 
 const streamWithBroadcaster = streamFields + `
-	broadcaster { ` + userFields + ` broadcastSettings { title } }`
+	broadcaster { ` + userFields + ` broadcastSettings { title language } }`
 
 const videoFields = `id title lengthSeconds viewCount createdAt broadcastType status animatedPreviewURL previewThumbnailURL(width: 640, height: 360)
 	game { ` + gameFields + ` }`
@@ -18,15 +18,15 @@ const clipFields = `slug title durationSeconds viewCount createdAt videoOffsetSe
 	game { ` + gameFields + ` }
 	video { id }`
 
-const queryTopStreams = `query TopStreams($first: Int, $after: Cursor) {
-	streams(first: $first, after: $after, options: { sort: VIEWER_COUNT }) {
+const queryTopStreams = `query TopStreams($languages: [Language!], $first: Int, $after: Cursor) {
+	streams(first: $first, after: $after, options: { sort: VIEWER_COUNT, broadcasterLanguages: $languages }) {
 		edges { cursor node { ` + streamWithBroadcaster + ` } }
 		pageInfo { hasNextPage }
 	}
 }`
 
-const queryTagStreams = `query TagStreams($tags: [String!], $first: Int, $after: Cursor) {
-	streams(first: $first, after: $after, options: { sort: VIEWER_COUNT, freeformTags: $tags }) {
+const queryTagStreams = `query TagStreams($tags: [String!], $languages: [Language!], $first: Int, $after: Cursor) {
+	streams(first: $first, after: $after, options: { sort: VIEWER_COUNT, freeformTags: $tags, broadcasterLanguages: $languages }) {
 		edges { cursor node { ` + streamWithBroadcaster + ` } }
 		pageInfo { hasNextPage }
 	}
@@ -39,10 +39,10 @@ const queryTopGames = `query TopGames($first: Int, $after: Cursor) {
 	}
 }`
 
-const queryGameStreams = `query GameStreams($slug: String, $first: Int, $after: Cursor) {
+const queryGameStreams = `query GameStreams($slug: String, $languages: [Language!], $first: Int, $after: Cursor) {
 	game(slug: $slug) {
 		` + gameFields + `
-		streams(first: $first, after: $after, options: { sort: VIEWER_COUNT }) {
+		streams(first: $first, after: $after, options: { sort: VIEWER_COUNT, broadcasterLanguages: $languages }) {
 			edges { cursor node { ` + streamWithBroadcaster + ` } }
 			pageInfo { hasNextPage }
 		}
